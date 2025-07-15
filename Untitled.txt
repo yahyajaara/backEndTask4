@@ -1,0 +1,128 @@
+
+
+
+CREATE SCHEMA Production
+
+CREATE TABLE Production.categories 
+(
+category_id int ,
+category_Name varchar(20),
+primary key (category_id)
+);
+
+
+CREATE TABLE Production.products
+(
+product_id int ,
+product_Name varchar(20),
+brand_id int ,
+category_id int REFERENCES Production.categories (category_id),
+model_year int ,
+list_price int,
+primary key (product_id)
+);
+
+CREATE TABLE Production.stocks 
+(
+store_id int ,
+product_id int REFERENCES Production.products(product_id),
+quantity int ,
+primary key (store_id)
+
+);
+
+
+CREATE TABLE Production.brands 
+(
+brand_id int ,
+brand_Name varchar(20),
+primary key (brand_id)
+);
+
+ALTER TABLE Production.products
+ADD FOREIGN KEY (brand_id) REFERENCES Production.brands (brand_id);
+
+ALTER TABLE Production.stocks
+ADD FOREIGN KEY (store_id) REFERENCES Sales.stores (store_id);
+
+
+
+CREATE SCHEMA Sales
+
+CREATE TABLE Sales.customers 
+(
+customer_id int ,
+first_name varchar(20) NOT NULL ,
+last_name varchar(20) NOT NULL ,
+phone varchar(10) NOT NULL ,
+email varchar(20) NOT NULL ,
+street varchar(20) NOT NULL ,
+city varchar(20) NOT NULL ,
+statee varchar(10) NOT NULL ,
+zip_code int NOT NULL ,
+PRIMARY KEY (customer_id )
+
+);
+
+CREATE TABLE Sales.orders
+(
+order_id int ,
+customer_id int REFERENCES Sales.customers(customer_id),
+order_status varchar(20) NOT NULL ,
+order_date Date NOT NULL ,
+required_date Date NOT NULL ,
+shipped_date Date NOT NULL ,
+store_id int unique ,
+staff_id int unique ,
+PRIMARY KEY (order_id)
+);
+
+
+
+CREATE TABLE Sales.staffs
+(
+staff_id int ,
+first_name varchar(20) NOT NULL ,
+last_name varchar(20) NOT NULL ,
+phone varchar(10) NOT NULL ,
+email varchar(20) NOT NULL ,
+active varchar(10) NOT NULL ,
+store_id int unique ,
+manager_id int REFERENCES Sales.staffs(staff_id),
+PRIMARY KEY (staff_id)
+);
+
+
+CREATE TABLE Sales.stores
+(
+store_id int ,
+store_name varchar(20) NOT NULL ,
+phone varchar(10) NOT NULL ,
+email varchar(20) NOT NULL ,
+street varchar(20) NOT NULL ,
+city varchar(20) NOT NULL ,
+statee varchar(10) NOT NULL ,
+zip_code int NOT NULL ,
+PRIMARY KEY (store_id)
+);
+
+
+CREATE TABLE Sales.order_items
+(
+order_id int REFERENCES Sales.orders(order_id) ,
+item_id int unique NOT NULL ,
+product_id int REFERENCES Production.products(product_id) ,
+quantity int ,
+list_price int,
+PRIMARY KEY (order_id ,item_id)
+);
+
+ALTER TABLE Sales.orders
+ADD FOREIGN KEY (staff_id) REFERENCES Sales.staffs(staff_id);
+
+ALTER TABLE Sales.orders
+ADD FOREIGN KEY (store_id) REFERENCES Sales.stores(store_id);
+
+ALTER TABLE Sales.staffs
+ADD FOREIGN KEY (store_id) REFERENCES Sales.stores(store_id);
+
